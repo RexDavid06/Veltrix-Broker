@@ -77,6 +77,14 @@
 
   <footer class="site-footer"><div class="section-wrap footer-top"><a class="brand" href="#home"><span class="brand-mark">V</span><span>VELTRIX</span></a><p>A considered platform concept for exploring the markets.</p><div class="footer-links"><a href="#markets">Markets</a><a href="#experience">Platform</a><a href="#support">Support</a><a href="#" data-view="login">Log in</a></div></div><div class="section-wrap footer-bottom"><span>© 2026 VELTRIX · Concept website</span><span>Demo only · Not a financial service offer</span></div><div class="section-wrap risk-disclaimer">Risk disclosure: Trading and investing involve risk and may not be suitable for everyone. You may lose some or all of your invested capital. This concept website is not a licensed brokerage service, does not provide financial advice, and does not execute trades or process payments.</div></footer>
 
+  <section class="live-chat-panel hidden" id="liveChatPanel" aria-label="VELTRIX human support chat" aria-hidden="true">
+    <div class="live-chat-header"><div class="live-agent-avatar">V</div><div class="live-agent-copy"><strong>VELTRIX Human Support</strong><span><i class="live-chat-dot"></i> 24/7 support concept</span></div><button type="button" class="live-chat-close" id="liveChatClose" aria-label="Close chat">×</button></div>
+    <div class="live-chat-notice">Demo preview: no human agent is connected and messages are not delivered. A live chat provider and staffed support team must be connected before launch.</div>
+    <div class="live-chat-messages" id="liveChatMessages" aria-live="polite"><div class="live-chat-message agent-message"><span>VELTRIX SUPPORT</span>Hi there! Welcome to VELTRIX. How can we help you today?</div></div>
+    <form class="live-chat-form" id="liveChatForm"><label class="sr-only" for="liveChatInput">Your message</label><input id="liveChatInput" name="message" maxlength="500" placeholder="Type your message…" autocomplete="off" required><button type="submit" aria-label="Send message">➤</button></form>
+    <div class="live-chat-footnote">Never share passwords, one-time codes, or payment card details in chat.</div>
+  </section>
+  <button class="live-chat-launcher" id="liveChatLauncher" type="button" aria-controls="liveChatPanel" aria-expanded="false"><span class="launcher-icon">▤</span><span><strong>24/7 Human Support</strong><small>Chat with our team</small></span><i class="live-chat-dot"></i></button>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="./app.js"></script>
 </body>

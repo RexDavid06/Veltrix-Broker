@@ -142,3 +142,36 @@ document.addEventListener('input', e => {
   }
 });
 go('home');
+
+// Floating support chat is a UI preview only until a real live-chat service is connected.
+const liveChatPanel = document.getElementById('liveChatPanel');
+const liveChatLauncher = document.getElementById('liveChatLauncher');
+const liveChatClose = document.getElementById('liveChatClose');
+const liveChatMessages = document.getElementById('liveChatMessages');
+const liveChatForm = document.getElementById('liveChatForm');
+const liveChatInput = document.getElementById('liveChatInput');
+function setLiveChatOpen(open) {
+  liveChatPanel.classList.toggle('hidden', !open);
+  liveChatPanel.setAttribute('aria-hidden', String(!open));
+  liveChatLauncher.setAttribute('aria-expanded', String(open));
+  if (open) liveChatInput.focus();
+}
+liveChatLauncher.addEventListener('click', () => setLiveChatOpen(liveChatPanel.classList.contains('hidden')));
+liveChatClose.addEventListener('click', () => setLiveChatOpen(false));
+liveChatForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const message = liveChatInput.value.trim();
+  if (!message) return;
+  const userBubble = document.createElement('div');
+  userBubble.className = 'live-chat-message user-message';
+  const userLabel = document.createElement('span'); userLabel.textContent = 'YOU';
+  userBubble.append(userLabel, document.createTextNode(message));
+  liveChatMessages.appendChild(userBubble);
+  const reply = document.createElement('div');
+  reply.className = 'live-chat-message agent-message';
+  const replyLabel = document.createElement('span'); replyLabel.textContent = 'DEMO AUTO-REPLY';
+  reply.append(replyLabel, document.createTextNode('Thanks for your message. This chat preview is not connected to a live human agent yet. Please do not share sensitive account or payment information.'));
+  liveChatMessages.appendChild(reply);
+  liveChatInput.value = '';
+  liveChatMessages.scrollTop = liveChatMessages.scrollHeight;
+});

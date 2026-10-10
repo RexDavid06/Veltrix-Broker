@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "_macros.html" import side_badge, status_badge %}
+{% block title %}Admin — VELTRIX Demo{% endblock %}
+{% block content %}
+<section class="section-wrap">
+  <div class="section-heading">
+    <div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> ADMINISTRATION</div>
+      <h2>Operations overview</h2>
+      <p>Administrator-only area. Access is enforced on the server.</p>
+    </div>
+    <span class="badge badge-demo">Admin</span>
+  </div>
+
+  {% include "admin/_nav.html" %}
+
+  <div class="admin-warn">Demo data only. Password hashes, session secrets and other sensitive values are never displayed here.</div>
+
+  <div class="stat-grid">
+    <div class="app-card"><span class="stat-label">DEMO USERS</span><div class="stat-value">{{ stats.users }}</div><span class="muted small">Client accounts</span></div>
+    <div class="app-card"><span class="stat-label">SIMULATED TRANSACTIONS</span><div class="stat-value">{{ stats.transactions }}</div><span class="muted small">Paper orders &amp; demo funds</span></div>
+    <div class="app-card"><span class="stat-label">OPEN SUPPORT</span><div class="stat-value">{{ stats.open_support }}</div><span class="muted small">Not yet resolved</span></div>
+    <div class="app-card"><span class="stat-label">INSTRUMENTS</span><div class="stat-value">{{ stats.instruments }}</div><span class="muted small">Demo universe</span></div>
+    <div class="app-card"><span class="stat-label">DEMO CASH (TOTAL)</span><div class="stat-value">${{ stats.cash_total|usd }}</div><span class="muted small">Fictional funds</span></div>
+    <div class="app-card"><span class="stat-label">NEW USERS (7D)</span><div class="stat-value">{{ stats.new_users_7d }}</div><span class="muted small">Registrations</span></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="app-card">
+      <div class="card-head"><div><h3>Latest simulated transactions</h3></div><a class="btn btn-outline btn-sm" href="{{ url_for('admin.transactions') }}">View all</a></div>
+      {% if recent_transactions %}
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Side</th><th>Instrument</th><th>Amount</th><th>When</th></tr></thead>
+            <tbody>
+              {% for t in recent_transactions %}
+                <tr><td>{{ side_badge(t.side) }}</td><td>{{ t.symbol }}</td><td>${{ t.amount|usd }}</td><td class="muted small">{{ t.created_at|nice_date }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}<div class="empty-state"><strong>No transactions yet</strong></div>{% endif %}
+    </div>
+
+    <div class="app-card">
+      <div class="card-head"><div><h3>Latest support requests</h3></div><a class="btn btn-outline btn-sm" href="{{ url_for('admin.support') }}">Manage</a></div>
+      {% if recent_support %}
+        <div class="support-thread">
+          {% for r in recent_support %}
+            <div class="thread-item">
+              <div class="thread-top"><strong>#{{ r.id }} · {{ r.subject }}</strong>{{ status_badge(r.status) }}</div>
+              <div class="muted small">{{ r.user.name if r.user else 'Unknown' }} · {{ r.created_at|nice_date }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}<div class="empty-state"><strong>No support requests yet</strong></div>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

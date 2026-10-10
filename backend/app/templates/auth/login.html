@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Sign in — VELTRIX Demo{% endblock %}
+{% block content %}
+<div class="back-link"><a href="{{ url_for('main.landing') }}">&larr; Back to VELTRIX</a></div>
+<form class="form-card" method="post" novalidate>
+  {{ form.hidden_tag() }}
+  <div class="eyebrow"><span class="eyebrow-line"></span> VELTRIX DEMO</div>
+  <h2>Welcome back</h2>
+  <p class="lede">Sign in to your simulated workspace.</p>
+
+  <div class="form-group">
+    {{ form.email.label }}
+    {{ form.email(autocomplete="email", placeholder="you@example.com") }}
+    {% for error in form.email.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+  </div>
+  <div class="form-group">
+    {{ form.password.label }}
+    {{ form.password(autocomplete="current-password", placeholder="Your password") }}
+    {% for error in form.password.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+  </div>
+  <label class="checkbox-row">{{ form.remember() }} {{ form.remember.label.text }}</label>
+  <div class="form-group" style="margin-top:16px">{{ form.submit(class="btn btn-primary btn-block") }}</div>
+  <p class="form-note">Demo only. Passwords are hashed and never shown. Do not reuse a real-world password.</p>
+  <div class="auth-switch">New to VELTRIX? <a href="{{ url_for('auth.register') }}">Create a demo account</a></div>
+</form>
+{% endblock %}

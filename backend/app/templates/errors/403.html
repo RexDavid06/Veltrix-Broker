@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Access denied — VELTRIX{% endblock %}
+{% block content %}
+<section class="section-wrap error-page">
+  <h1>403</h1>
+  <h2>Access denied</h2>
+  <p class="muted">Your account does not have permission to view this page.</p>
+  <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <a class="btn btn-primary" href="{{ url_for('main.dashboard') }}">Go to dashboard</a>
+    <a class="btn btn-outline" href="{{ url_for('main.landing') }}">Back to home</a>
+  </div>
+</section>
+{% endblock %}

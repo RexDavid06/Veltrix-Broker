@@ -1,0 +1,25 @@
+# --- Python / Flask backend ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Environment files (never commit real secrets)
+.env
+.env.local
+*.env
+
+# Local SQLite databases (never commit demo data)
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# Editor / OS cruft
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

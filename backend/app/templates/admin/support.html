@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge %}
+{% block title %}Support requests — VELTRIX Admin{% endblock %}
+{% block content %}
+<section class="section-wrap">
+  <div class="section-heading">
+    <div><div class="eyebrow"><span class="eyebrow-line"></span> ADMINISTRATION</div><h2>Support requests</h2><p>Review and update demo request statuses.</p></div>
+  </div>
+  {% include "admin/_nav.html" %}
+  <div class="admin-warn">This is a demo support queue. No live human support service is connected or staffed.</div>
+
+  <div class="pill-row">
+    <a class="pill {{ 'active' if not active_status else '' }}" href="{{ url_for('admin.support') }}">All</a>
+    {% for s in ['open', 'in_progress', 'resolved'] %}
+      <a class="pill {{ 'active' if active_status == s else '' }}" href="{{ url_for('admin.support', status=s) }}">{{ s|replace('_',' ')|title }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="app-card">
+    {% if requests %}
+      <div class="support-thread">
+        {% for r in requests %}
+          <div class="thread-item">
+            <div class="thread-top">
+              <strong>#{{ r.id }} · {{ r.subject }}</strong>
+              {{ status_badge(r.status) }}
+            </div>
+            <p>{{ r.message }}</p>
+            <div class="muted small" style="margin:8px 0 12px">
+              {{ r.user.name if r.user else 'Unknown user' }} · {{ r.user.email if r.user else '' }} · {{ r.created_at|nice_date }}
+            </div>
+            <form class="status-form" method="post" action="{{ url_for('admin.update_support_status', request_id=r.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <label class="sr-only" for="status-{{ r.id }}">Status for request {{ r.id }}</label>
+              <select id="status-{{ r.id }}" name="status">
+                {% for s in ['open', 'in_progress', 'resolved'] %}
+                  <option value="{{ s }}" {{ 'selected' if r.status == s else '' }}>{{ s|replace('_',' ')|title }}</option>
+                {% endfor %}
+              </select>
+              <button class="btn btn-primary btn-sm" type="submit">Update status</button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}<div class="empty-state"><strong>No support requests</strong>Nothing to review right now.</div>{% endif %}
+  </div>
+</section>
+{% endblock %}

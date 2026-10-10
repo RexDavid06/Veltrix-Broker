@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Users — VELTRIX Admin{% endblock %}
+{% block content %}
+<section class="section-wrap">
+  <div class="section-heading">
+    <div><div class="eyebrow"><span class="eyebrow-line"></span> ADMINISTRATION</div><h2>Demo users</h2><p>Client and administrator accounts.</p></div>
+  </div>
+  {% include "admin/_nav.html" %}
+  <div class="admin-warn">Passwords are stored only as one-way hashes and are never shown. No sensitive credentials are displayed anywhere in this area.</div>
+
+  <div class="app-card">
+    {% if users %}
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Demo balance</th><th>Created</th></tr></thead>
+          <tbody>
+            {% for u in users %}
+              <tr>
+                <td>#{{ u.id }}</td>
+                <td><b>{{ u.name }}</b></td>
+                <td class="muted">{{ u.email }}</td>
+                <td><span class="badge {{ 'badge-demo' if u.is_admin else '' }}">{{ u.role|title }}</span></td>
+                <td>${{ (u.account.cash_balance if u.account else 0)|usd }}</td>
+                <td class="muted small">{{ u.created_at|nice_date }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}<div class="empty-state"><strong>No users yet</strong></div>{% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Portfolio — VELTRIX Demo{% endblock %}
+{% block content %}
+<section class="section-wrap">
+  <div class="section-heading">
+    <div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> SIMULATED PORTFOLIO</div>
+      <h2>Portfolio &amp; balances</h2>
+      <p>Every value is simulated. No assets are held and no cash is real.</p>
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('trading.transactions') }}">Full activity &#8599;</a>
+  </div>
+
+  <div class="admin-warn">Simulated portfolio information — not a record of real assets or funds.</div>
+
+  <div class="stat-grid">
+    <div class="app-card"><span class="stat-label">DEMO CASH</span><div class="stat-value">${{ cash|usd }}</div><span class="muted small">Available to trade</span></div>
+    <div class="app-card"><span class="stat-label">POSITIONS VALUE</span><div class="stat-value">${{ portfolio_value|usd }}</div><span class="muted small">At illustrative prices</span></div>
+    <div class="app-card"><span class="stat-label">TOTAL DEMO EQUITY</span><div class="stat-value">${{ total_equity|usd }}</div><span class="muted small">Cash + positions</span></div>
+    <div class="app-card"><span class="stat-label">UNREALISED P/L</span><div class="stat-value {{ 'positive' if unrealised >= 0 else 'negative' }}">{{ '+' if unrealised >= 0 else '' }}${{ unrealised|usd }}</div><span class="muted small">Cost basis ${{ cost_basis|usd }}</span></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="app-card">
+      <div class="card-head">
+        <div><h3>Holdings</h3><div class="muted small">Simulated positions</div></div>
+      </div>
+      {% if positions %}
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Instrument</th><th>Quantity</th><th>Avg price</th><th>Value</th><th>P/L</th><th></th></tr></thead>
+            <tbody>
+              {% for p in positions %}
+                <tr>
+                  <td><span class="asset-symbol"><span class="asset-badge">{{ p.instrument.symbol[:3] }}</span><span><b>{{ p.instrument.symbol }}</b><br><span class="asset-name">{{ p.instrument.name }}</span></span></span></td>
+                  <td>{{ p.quantity|qty }}</td>
+                  <td>{{ '%.4f'|format(p.avg_price) }}</td>
+                  <td>${{ p.market_value|usd }}</td>
+                  <td class="{{ 'positive' if p.unrealised_pnl >= 0 else 'negative' }}">{{ '+' if p.unrealised_pnl >= 0 else '' }}${{ p.unrealised_pnl|usd }}</td>
+                  <td><a class="btn btn-outline btn-sm" href="{{ url_for('markets.detail', symbol=p.instrument.symbol) }}">Trade</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state"><strong>No holdings</strong>Buy a simulated instrument to open a position.<br><a class="btn btn-primary btn-sm" style="margin-top:14px" href="{{ url_for('markets.index') }}">Browse markets</a></div>
+      {% endif %}
+    </div>
+
+    <div class="app-card">
+      <h3>Demo funds</h3>
+      <p class="muted small">Add fictional demo funds to keep testing. This is not a deposit and no payment is processed.</p>
+      <form method="post" action="{{ url_for('trading.top_up') }}" style="margin-top:14px" novalidate>
+        {{ topup_form.hidden_tag() }}
+        <div class="form-group">
+          {{ topup_form.amount.label }}
+          {{ topup_form.amount(placeholder="e.g. 2500.00", inputmode="decimal") }}
+          {% for error in topup_form.amount.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+        </div>
+        <button class="btn btn-outline btn-block" type="submit">Add demo funds</button>
+      </form>
+      <p class="form-note">No money is deposited. A clear confirmation appears and a simulated record is added to your activity.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% from "_macros.html" import side_badge, status_badge %}
+{% block title %}Dashboard — VELTRIX Demo{% endblock %}
+{% block content %}
+<section class="section-wrap">
+  <div class="section-heading">
+    <div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> DEMO WORKSPACE</div>
+      <h2>Welcome back, {{ current_user.name.split(' ')[0] }}.</h2>
+      <p>Here is your simulated workspace at a glance.</p>
+    </div>
+    <span class="badge badge-demo">&#9679; Demo mode — funds are fictional</span>
+  </div>
+
+  <div class="admin-warn">All figures and activity below are simulated. No funds are held and no trades are sent to any market.</div>
+
+  <div class="stat-grid">
+    <div class="app-card"><span class="stat-label">DEMO CASH BALANCE</span><div class="stat-value">${{ cash|usd }}</div><span class="muted small">Available simulated cash</span></div>
+    <div class="app-card"><span class="stat-label">POSITIONS VALUE</span><div class="stat-value">${{ portfolio_value|usd }}</div><span class="muted small">At illustrative prices</span></div>
+    <div class="app-card"><span class="stat-label">TOTAL DEMO EQUITY</span><div class="stat-value">${{ total_equity|usd }}</div>
+      <span class="{{ 'positive' if unrealised >= 0 else 'negative' }}">{{ '+' if unrealised >= 0 else '' }}${{ unrealised|usd }} unrealised</span></div>
+    <div class="app-card"><span class="stat-label">OPEN POSITIONS</span><div class="stat-value">{{ positions|length }}</div><span class="muted small">Simulated holdings</span></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="app-card">
+      <div class="card-head">
+        <div><h3>Portfolio holdings</h3><div class="muted small">Simulated positions</div></div>
+        <a class="btn btn-outline btn-sm" href="{{ url_for('trading.portfolio') }}">Portfolio &#8599;</a>
+      </div>
+      {% if positions %}
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Instrument</th><th>Quantity</th><th>Value</th><th>P/L</th></tr></thead>
+            <tbody>
+              {% for p in positions %}
+                <tr>
+                  <td><span class="asset-symbol"><span class="asset-badge">{{ p.instrument.symbol[:3] }}</span><span><b>{{ p.instrument.symbol }}</b><br><span class="asset-name">{{ p.instrument.name }}</span></span></span></td>
+                  <td>{{ p.quantity|qty }}</td>
+                  <td>${{ p.market_value|usd }}</td>
+                  <td class="{{ 'positive' if p.unrealised_pnl >= 0 else 'negative' }}">{{ '+' if p.unrealised_pnl >= 0 else '' }}${{ p.unrealised_pnl|usd }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state"><strong>No positions yet</strong>Place a simulated buy from the markets page to see holdings here.<br><a class="btn btn-primary btn-sm" style="margin-top:14px" href="{{ url_for('markets.index') }}">Browse markets</a></div>
+      {% endif %}
+    </div>
+
+    <div class="app-card">
+      <div class="card-head">
+        <div><h3>Watchlist</h3><div class="muted small">Your tracked instruments</div></div>
+        <a class="btn btn-outline btn-sm" href="{{ url_for('markets.index') }}">Manage</a>
+      </div>
+      {% if watchlist %}
+        {% for w in watchlist %}
+          <div class="trade-summary" style="margin-bottom:8px">
+            <span><b>{{ w.instrument.symbol }}</b> <span class="muted small">{{ w.instrument.name }}</span></span>
+            <span>{{ '%.2f'|format(w.instrument.price) }} <span class="{{ 'positive' if w.instrument.change_percent >= 0 else 'negative' }}">{{ '+' if w.instrument.change_percent >= 0 else '' }}{{ '%.2f'|format(w.instrument.change_percent) }}%</span></span>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state"><strong>Watchlist is empty</strong>Add instruments from the markets page.</div>
+      {% endif %}
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn btn-outline btn-sm" href="{{ url_for('markets.index') }}">Add instruments</a>
+        <a class="btn btn-outline btn-sm" href="{{ url_for('support.index') }}">Get support</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-card" style="margin-top:18px">
+    <div class="card-head">
+      <div><h3>Recent simulated transactions</h3><div class="muted small">Your last demo activity</div></div>
+      <a class="btn btn-outline btn-sm" href="{{ url_for('trading.transactions') }}">All activity &#8599;</a>
+    </div>
+    {% if recent %}
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>Side</th><th>Instrument</th><th>Quantity</th><th>Price</th><th>Amount</th><th>When</th></tr></thead>
+          <tbody>
+            {% for t in recent %}
+              <tr>
+                <td>{{ side_badge(t.side) }}</td>
+                <td>{{ t.symbol }}</td>
+                <td>{{ t.quantity|qty }}</td>
+                <td>{{ '%.4f'|format(t.execution_price) }}</td>
+                <td>${{ t.amount|usd }}</td>
+                <td class="muted small">{{ t.created_at|nice_date }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state"><strong>No simulated activity yet</strong>Your simulated orders will appear here.</div>
+    {% endif %}
+  </div>
+
+  <div class="app-card" style="margin-top:18px">
+    <div class="card-head">
+      <div><h3>Market summary</h3><div class="muted small">Illustrative demo prices — not live market data</div></div>
+      <a class="btn btn-outline btn-sm" href="{{ url_for('markets.index') }}">All markets &#8599;</a>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Instrument</th><th>Class</th><th>Demo price</th><th>Change</th><th></th></tr></thead>
+        <tbody>
+          {% for i in market_summary %}
+            <tr>
+              <td><span class="asset-symbol"><span class="asset-badge">{{ i.symbol[:3] }}</span><span><b>{{ i.symbol }}</b><br><span class="asset-name">{{ i.name }}</span></span></span></td>
+              <td class="muted small">{{ i.asset_class }}</td>
+              <td>{{ '%.2f'|format(i.price) }}</td>
+              <td class="{{ 'positive' if i.change_percent >= 0 else 'negative' }}">{{ '+' if i.change_percent >= 0 else '' }}{{ '%.2f'|format(i.change_percent) }}%</td>
+              <td><a class="btn btn-outline btn-sm" href="{{ url_for('markets.detail', symbol=i.symbol) }}">Trade</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import side_badge %}
+{% block title %}Transactions — VELTRIX Admin{% endblock %}
+{% block content %}
+<section class="section-wrap">
+  <div class="section-heading">
+    <div><div class="eyebrow"><span class="eyebrow-line"></span> ADMINISTRATION</div><h2>Simulated transactions</h2><p>All paper activity across demo accounts.</p></div>
+  </div>
+  {% include "admin/_nav.html" %}
+  <div class="admin-warn">No real payment or trading provider is connected. These records are simulated.</div>
+
+  <div class="app-card">
+    {% if transactions %}
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>ID</th><th>User</th><th>Side</th><th>Instrument</th><th>Qty</th><th>Exec price</th><th>Amount</th><th>When</th></tr></thead>
+          <tbody>
+            {% for t in transactions %}
+              <tr>
+                <td>#{{ t.id }}</td>
+                <td class="muted small">{{ t.user.email if t.user else '—' }}</td>
+                <td>{{ side_badge(t.side) }}</td>
+                <td>{{ t.symbol }}</td>
+                <td>{{ t.quantity|qty }}</td>
+                <td>{{ '%.4f'|format(t.execution_price) if t.execution_price else '—' }}</td>
+                <td>${{ t.amount|usd }}</td>
+                <td class="muted small">{{ t.created_at|nice_date }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="mobile-note">Showing up to the 200 most recent records.</p>
+    {% else %}<div class="empty-state"><strong>No transactions yet</strong></div>{% endif %}
+  </div>
+</section>
+{% endblock %}

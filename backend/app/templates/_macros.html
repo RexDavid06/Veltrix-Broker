@@ -1,0 +1,14 @@
+{# Shared small components #}
+{% macro status_badge(status) -%}
+  {%- if status == 'open' -%}<span class="badge badge-open">Open</span>
+  {%- elif status == 'in_progress' -%}<span class="badge badge-progress">In progress</span>
+  {%- elif status == 'resolved' -%}<span class="badge badge-resolved">Resolved</span>
+  {%- else -%}<span class="badge">{{ status|replace('_',' ')|title }}</span>{%- endif -%}
+{%- endmacro %}
+
+{% macro side_badge(side) -%}
+  {%- if side == 'buy' -%}<span class="badge badge-buy">Buy</span>
+  {%- elif side == 'sell' -%}<span class="badge badge-sell">Sell</span>
+  {%- elif side == 'topup' -%}<span class="badge badge-topup">Demo funds</span>
+  {%- else -%}<span class="badge">{{ side|title }}</span>{%- endif -%}
+{%- endmacro %}

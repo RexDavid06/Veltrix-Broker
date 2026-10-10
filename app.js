@@ -5,6 +5,23 @@ const toastEl = document.getElementById('toast');
 let currentView = 'home';
 let toastTimer;
 
+// If a deployed full-stack demo URL is configured (see <meta name="veltrix-app-url">),
+// route the sign-in / registration / dashboard calls to it. Otherwise the static
+// in-page preview is used, exactly as before.
+const APP_URL = (document.querySelector('meta[name="veltrix-app-url"]')?.content || '').replace(/\/+$/, '');
+const APP_PATHS = {
+  login: '/login', register: '/register', forgot: '/login',
+  portal: '/dashboard', markets: '/markets', portfolio: '/portfolio',
+  accounts: '/portfolio', wallet: '/portfolio', deposits: '/portfolio',
+  withdrawals: '/portfolio', transactions: '/transactions',
+  kyc: '/dashboard', settings: '/dashboard', 'portal-support': '/support'
+};
+function appUrlFor(view) {
+  if (!APP_URL) return null;
+  if (view === 'admin' || view.startsWith('admin-')) return `${APP_URL}/admin/`;
+  return APP_PATHS[view] ? `${APP_URL}${APP_PATHS[view]}` : null;
+}
+
 const marketRows = [
   ['EUR/USD','Euro / US Dollar','1.0842','+0.18%','positive','€'],
   ['BTC/USD','Bitcoin / US Dollar','$67,420','+1.42%','positive','₿'],
@@ -118,7 +135,12 @@ function renderView(view) {
 }
 document.addEventListener('click', e => {
   const viewEl = e.target.closest('[data-view]');
-  if (viewEl) { e.preventDefault(); go(viewEl.dataset.view); return; }
+  if (viewEl) {
+    e.preventDefault();
+    const external = appUrlFor(viewEl.dataset.view);
+    if (external) { window.location.href = external; return; }
+    go(viewEl.dataset.view); return;
+  }
   const toastButton = e.target.closest('[data-toast]');
   if (toastButton) { e.preventDefault(); showToast(toastButton.dataset.toast); }
 });

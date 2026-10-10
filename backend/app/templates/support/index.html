@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge %}
+{% block title %}Support centre — VELTRIX Demo{% endblock %}
+{% block content %}
+<section class="section-wrap">
+  <div class="section-heading">
+    <div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> SUPPORT CENTRE</div>
+      <h2>Support centre</h2>
+      <p>Submit a demo request and track its status.</p>
+    </div>
+  </div>
+
+  <div class="admin-warn">
+    This is a demonstration support queue. Requests are stored so you can see how status tracking works,
+    but <strong>no human agent is connected</strong>, no live chat is staffed, and responses are not guaranteed.
+  </div>
+
+  <div class="grid-2">
+    <div class="app-card">
+      <h3>New demo request</h3>
+      <form method="post" action="{{ url_for('support.index') }}" style="margin-top:14px" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+          {{ form.subject.label }}
+          {{ form.subject(placeholder="Short summary, e.g. Question about demo funds") }}
+          {% for error in form.subject.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.message.label }}
+          {{ form.message(rows="5", placeholder="Describe your question about the demo. Do not include passwords or real personal data.") }}
+          {% for error in form.message.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Submit demo request</button>
+        <p class="form-note">Never share passwords, one-time codes or payment details in a support request.</p>
+      </form>
+    </div>
+
+    <div class="app-card">
+      <div class="card-head">
+        <div><h3>Your requests</h3><div class="muted small">Only visible to your account</div></div>
+      </div>
+      {% if requests %}
+        <div class="support-thread">
+          {% for r in requests %}
+            <div class="thread-item">
+              <div class="thread-top">
+                <strong>#{{ r.id }} · {{ r.subject }}</strong>
+                {{ status_badge(r.status) }}
+              </div>
+              <p>{{ r.message }}</p>
+              <div class="muted small" style="margin-top:8px">Submitted {{ r.created_at|nice_date }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><strong>No requests yet</strong>Use the form to submit your first demo support request.</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

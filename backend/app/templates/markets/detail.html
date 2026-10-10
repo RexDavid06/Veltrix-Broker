@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ instrument.symbol }} — VELTRIX Demo{% endblock %}
+{% block content %}
+<section class="section-wrap">
+  <div class="back-link"><a href="{{ url_for('markets.index') }}">&larr; All markets</a></div>
+
+  <div class="detail-hero">
+    <div>
+      <span class="stat-label">{{ instrument.asset_class|upper }}</span>
+      <h2 style="font-size:30px;margin:6px 0">{{ instrument.symbol }}</h2>
+      <p class="muted">{{ instrument.name }}</p>
+    </div>
+    <div style="text-align:right">
+      <div class="detail-price">{{ '%.4f'|format(instrument.price) if instrument.price < 10 else '%.2f'|format(instrument.price) }}</div>
+      <span class="{{ 'positive' if instrument.change_percent >= 0 else 'negative' }}">{{ '+' if instrument.change_percent >= 0 else '' }}{{ '%.2f'|format(instrument.change_percent) }}% today (illustrative)</span>
+      <div class="muted small">Illustrative demo price — not live market data.</div>
+    </div>
+  </div>
+
+  <div class="admin-warn">Orders placed here are simulated paper trades against an illustrative price. They are never sent to a broker, exchange or market.</div>
+
+  <div class="grid-2">
+    <div class="app-card">
+      <h3>Place a simulated order</h3>
+      {% if current_user.is_authenticated %}
+        <form method="post" action="{{ url_for('trading.trade') }}" data-trade-form data-price="{{ instrument.price }}" data-confirm-sim novalidate style="margin-top:16px">
+          {{ form.hidden_tag() }}
+          <div class="trade-panel">
+            <div class="form-group">
+              {{ form.side.label }}
+              {{ form.side() }}
+            </div>
+            <div class="form-group">
+              {{ form.quantity.label }}
+              {{ form.quantity(placeholder="e.g. 1.5", autocomplete="off", **{'data-qty':'', 'inputmode':'decimal'}) }}
+            </div>
+            <div class="full trade-summary">
+              <span class="muted">Estimated simulated amount</span>
+              <strong>{{ demo_currency }} <span data-amount>&mdash;</span></strong>
+            </div>
+            <div class="full">
+              <button class="btn btn-primary btn-block" type="submit">Submit simulated order</button>
+            </div>
+          </div>
+          <p class="form-note">Buy orders require sufficient demo cash. Sell orders cannot exceed the units you own. Nothing real is bought or sold.</p>
+        </form>
+      {% else %}
+        <div class="empty-state" style="margin-top:14px">
+          <strong>Sign in to trade</strong>You need a demo account to place simulated orders.
+          <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <a class="btn btn-primary btn-sm" href="{{ url_for('auth.login') }}">Sign in</a>
+            <a class="btn btn-outline btn-sm" href="{{ url_for('auth.register') }}">Create demo account</a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="app-card">
+      <h3>Instrument details</h3>
+      <div class="trade-summary" style="margin-top:12px"><span class="muted">Asset class</span><strong>{{ instrument.asset_class }}</strong></div>
+      <div class="trade-summary" style="margin-top:8px"><span class="muted">Currency</span><strong>{{ instrument.currency }}</strong></div>
+      <div class="trade-summary" style="margin-top:8px"><span class="muted">Demo price</span><strong>{{ '%.4f'|format(instrument.price) if instrument.price < 10 else '%.2f'|format(instrument.price) }}</strong></div>
+      {% if current_user.is_authenticated %}
+        <form method="post" action="{{ url_for('markets.toggle_watchlist') }}" class="inline-form" style="display:block;margin-top:16px">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="instrument_id" value="{{ instrument.id }}">
+          <button class="btn btn-outline btn-block" type="submit">{{ '&#9733; Remove from watchlist'|safe if instrument.symbol in watchlist else '&#9734; Add to watchlist'|safe }}</button>
+        </form>
+      {% endif %}
+      <p class="form-note">Values shown are seeded demonstration data. No live market feed is connected in this build.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

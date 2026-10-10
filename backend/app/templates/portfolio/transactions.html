@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% from "_macros.html" import side_badge %}
+{% block title %}Activity — VELTRIX Demo{% endblock %}
+{% block content %}
+<section class="section-wrap">
+  <div class="section-heading">
+    <div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> SIMULATED ACTIVITY</div>
+      <h2>Transaction history</h2>
+      <p>These records are fictional. They are not financial transactions.</p>
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('trading.portfolio') }}">Portfolio &#8599;</a>
+  </div>
+
+  <div class="app-card">
+    {% if transactions %}
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>Side</th><th>Instrument</th><th>Quantity</th><th>Exec price</th><th>Amount</th><th>Status</th><th>Timestamp</th></tr></thead>
+          <tbody>
+            {% for t in transactions %}
+              <tr>
+                <td>{{ side_badge(t.side) }}</td>
+                <td><b>{{ t.symbol }}</b></td>
+                <td>{{ t.quantity|qty }}</td>
+                <td>{{ '%.4f'|format(t.execution_price) if t.execution_price else '—' }}</td>
+                <td>${{ t.amount|usd }}</td>
+                <td><span class="badge badge-demo">{{ t.status|title }}</span></td>
+                <td class="muted small">{{ t.created_at|nice_date }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="mobile-note">Swipe horizontally to view all columns on small screens.</p>
+    {% else %}
+      <div class="empty-state"><strong>No simulated activity yet</strong>Place a paper order to see it recorded here.<br><a class="btn btn-primary btn-sm" style="margin-top:14px" href="{{ url_for('markets.index') }}">Browse markets</a></div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

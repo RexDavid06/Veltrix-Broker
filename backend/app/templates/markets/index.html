@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Markets — VELTRIX Demo{% endblock %}
+{% block content %}
+<section class="section-wrap">
+  <div class="section-heading">
+    <div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> DEMO MARKETS</div>
+      <h2>Markets</h2>
+      <p>Illustrative demo prices — not live market data. No order is sent to any venue.</p>
+    </div>
+    <span class="badge badge-demo">&#9679; Simulated prices</span>
+  </div>
+
+  <form class="filters" method="get" action="{{ url_for('markets.index') }}" role="search">
+    <div class="field form-group">
+      <label for="q">Search instruments</label>
+      <input id="q" name="q" value="{{ query }}" placeholder="Symbol or name, e.g. BTC or Apple" autocomplete="off">
+    </div>
+    <div class="field form-group">
+      <label for="asset">Asset class</label>
+      <select id="asset" name="asset">
+        <option value="">All asset classes</option>
+        {% for a in asset_classes %}<option value="{{ a }}" {{ 'selected' if a == asset else '' }}>{{ a }}</option>{% endfor %}
+      </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Apply filters</button>
+    {% if query or asset %}<a class="btn btn-quiet" href="{{ url_for('markets.index') }}">Clear</a>{% endif %}
+  </form>
+
+  <div class="app-card">
+    {% if instruments %}
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>Instrument</th><th>Class</th><th>Demo price</th><th>Change</th><th>Watchlist</th><th>Trade</th></tr></thead>
+          <tbody>
+            {% for i in instruments %}
+              <tr>
+                <td><span class="asset-symbol"><span class="asset-badge">{{ i.symbol[:3] }}</span><span><b>{{ i.symbol }}</b><br><span class="asset-name">{{ i.name }}</span></span></span></td>
+                <td class="muted small">{{ i.asset_class }}</td>
+                <td>{{ '%.4f'|format(i.price) if i.price < 10 else '%.2f'|format(i.price) }} {{ i.currency }}</td>
+                <td class="{{ 'positive' if i.change_percent >= 0 else 'negative' }}">{{ '+' if i.change_percent >= 0 else '' }}{{ '%.2f'|format(i.change_percent) }}%</td>
+                <td>
+                  <form method="post" action="{{ url_for('markets.toggle_watchlist') }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="instrument_id" value="{{ i.id }}">
+                    <button class="btn btn-sm {{ 'btn-primary' if i.symbol in watchlist else 'btn-outline' }}" type="submit" title="{{ 'Remove from watchlist' if i.symbol in watchlist else 'Add to watchlist' }}">
+                      {{ '&#9733; In watchlist'|safe if i.symbol in watchlist else '&#9734; Watch'|safe }}
+                    </button>
+                  </form>
+                </td>
+                <td><a class="btn btn-outline btn-sm" href="{{ url_for('markets.detail', symbol=i.symbol) }}">Trade</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="mobile-note">Swipe horizontally to view all columns on small screens.</p>
+    {% else %}
+      <div class="empty-state"><strong>No instruments match your search</strong>Try a different symbol, name or asset class.<br><a class="btn btn-outline btn-sm" style="margin-top:14px" href="{{ url_for('markets.index') }}">Reset filters</a></div>
+    {% endif %}
+  </div>
+  <p class="footnote">Watchlist requires sign-in. Prices are seeded examples and never represent live quotes.</p>
+</section>
+{% endblock %}

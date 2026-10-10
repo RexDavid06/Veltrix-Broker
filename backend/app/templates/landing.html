@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}VELTRIX — Explore a simulated multi-asset market{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <div class="eyebrow"><span class="eyebrow-line"></span> A clearer way to explore the markets</div>
+    <h1>Your next move<br>starts <span>here.</span></h1>
+    <p class="lede">Explore a multi-asset demo experience across stocks, crypto, forex, commodities and indices — with clarity, control and a fully simulated account.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-large" href="{{ url_for('auth.register') }}">Open a demo account <span aria-hidden="true">&#8599;</span></a>
+      <a class="btn btn-outline btn-large" href="#markets">Explore the markets <span aria-hidden="true">&#8595;</span></a>
+    </div>
+    <p class="footnote">Every price, balance and trade on this platform is simulated for demonstration. Not a licensed financial service.</p>
+  </div>
+  <div class="hero-visual" aria-hidden="true">
+    <div class="card-head">
+      <div><span class="stat-label">DEMO PORTFOLIO VALUE</span><div class="chart-value">$24,680.50</div></div>
+      <span class="positive">+4.28% illustrative</span>
+    </div>
+    <div class="period-switch"><span class="selected">1D</span><span>1W</span><span>1M</span><span>3M</span><span>1Y</span></div>
+    <svg class="hero-chart" viewBox="0 0 520 190" preserveAspectRatio="none" role="img" aria-label="Illustrative portfolio chart">
+      <g class="chart-grid"><line x1="0" y1="40" x2="520" y2="40"/><line x1="0" y1="90" x2="520" y2="90"/><line x1="0" y1="140" x2="520" y2="140"/></g>
+      <path d="M0 150 C48 138 60 150 96 120 S150 132 190 96 S250 118 300 74 S360 88 420 48 S480 60 520 22" fill="none" stroke="#8be3b5" stroke-width="3"/>
+    </svg>
+    <div class="hero-meta">
+      <div><span class="stat-label">DEMO CASH</span><strong>$10,000.00</strong></div>
+      <div><span class="stat-label">ASSET CLASSES</span><strong>5</strong></div>
+      <div><span class="stat-label">MODE</span><strong>Simulated</strong></div>
+    </div>
+  </div>
+</section>
+
+{% if instruments %}
+<section class="ticker-strip" aria-label="Demo market snapshot">
+  <div class="ticker-intro">MARKET SNAPSHOT <span>DEMO</span></div>
+  {% for i in instruments %}
+    <div class="ticker-item">
+      <span>{{ i.symbol }}</span>
+      <b>{{ '%.2f'|format(i.price) }}</b>
+      <em class="{{ 'positive' if i.change_percent >= 0 else 'negative' }}">{{ '+' if i.change_percent >= 0 else '' }}{{ '%.2f'|format(i.change_percent) }}%</em>
+    </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+<section class="section-wrap" id="markets">
+  <div class="section-heading">
+    <div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> THE WORLD IN VIEW</div>
+      <h2>Find your place in the <span style="color:var(--green)">markets.</span></h2>
+    </div>
+    <div>
+      <p>Explore a range of asset classes from one interface. All prices are illustrative demo data.</p>
+      <a class="btn btn-outline" style="margin-top:12px" href="{{ url_for('markets.index') }}">Open the markets <span aria-hidden="true">&#8599;</span></a>
+    </div>
+  </div>
+  <div class="market-grid">
+    {% for i in instruments %}
+      <article class="market-card">
+        <div class="market-card-head">
+          <div>
+            <span class="stat-label">{{ i.asset_class|upper }}</span>
+            <h3>{{ i.symbol }}</h3>
+          </div>
+          <span class="badge">{{ i.currency }}</span>
+        </div>
+        <div class="market-price">{{ '%.2f'|format(i.price) }}
+          <span class="{{ 'positive' if i.change_percent >= 0 else 'negative' }}">{{ '+' if i.change_percent >= 0 else '' }}{{ '%.2f'|format(i.change_percent) }}%</span>
+        </div>
+        <p class="small muted">{{ i.name }}</p>
+        <a class="btn btn-outline btn-sm" href="{{ url_for('markets.detail', symbol=i.symbol) }}">View instrument</a>
+      </article>
+    {% endfor %}
+  </div>
+  <p class="footnote">Illustrative demo prices — not live market data. Market values are for demonstration only and are not executable quotes or investment advice.</p>
+</section>
+
+<section class="feature-band" id="platform">
+  <div class="section-wrap feature-layout">
+    <div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> BUILT AROUND YOU</div>
+      <h2>More clarity.<br>Less <span style="color:var(--green)">noise.</span></h2>
+      <p class="feature-copy">A considered trading experience gives you room to focus on understanding the market, managing your simulated activity and making informed decisions.</p>
+      <a class="btn btn-primary" style="margin-top:16px" href="{{ url_for('auth.register') }}">Open a demo account <span aria-hidden="true">&#8599;</span></a>
+    </div>
+    <div class="feature-list">
+      <div class="feature-row"><span class="feature-number">01</span><div><h3>One considered view</h3><p>Your watchlist, demo balance and market context in a single clear workspace.</p></div></div>
+      <div class="feature-row"><span class="feature-number">02</span><div><h3>Simulated trading</h3><p>Place paper buy and sell orders against illustrative prices and track the results.</p></div></div>
+      <div class="feature-row"><span class="feature-number">03</span><div><h3>Multi-asset coverage</h3><p>Stocks, crypto, forex, commodities and indices in one consistent data model.</p></div></div>
+      <div class="feature-row"><span class="feature-number">04</span><div><h3>Honest by design</h3><p>Demo status and risk disclosures are shown plainly. No real money is ever at risk.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-wrap" id="support">
+  <div class="support-cta">
+    <div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> HERE TO HELP</div>
+      <h2>Submit a demo support request.</h2>
+      <p class="muted">Create a request and see its status change. This is a demonstration queue — no human agent is connected and no live chat is staffed.</p>
+    </div>
+    <a class="btn btn-primary btn-large" href="{{ url_for('support.index') }}">Visit support centre <span aria-hidden="true">&#8599;</span></a>
+  </div>
+</section>
+{% endblock %}

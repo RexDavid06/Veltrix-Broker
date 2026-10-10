@@ -1,0 +1,7 @@
+{% set current = request.endpoint %}
+<nav class="admin-nav" aria-label="Admin sections">
+  <a href="{{ url_for('admin.dashboard') }}" class="{{ 'active' if current == 'admin.dashboard' else '' }}">Overview</a>
+  <a href="{{ url_for('admin.users') }}" class="{{ 'active' if current == 'admin.users' else '' }}">Users</a>
+  <a href="{{ url_for('admin.transactions') }}" class="{{ 'active' if current == 'admin.transactions' else '' }}">Transactions</a>
+  <a href="{{ url_for('admin.support') }}" class="{{ 'active' if current == 'admin.support' else '' }}">Support requests</a>
+</nav>

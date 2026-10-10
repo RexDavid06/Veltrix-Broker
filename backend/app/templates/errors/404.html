@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Page not found — VELTRIX{% endblock %}
+{% block content %}
+<section class="section-wrap error-page">
+  <h1>404</h1>
+  <h2>Page not found</h2>
+  <p class="muted">The page you requested does not exist or has moved.</p>
+  <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <a class="btn btn-primary" href="{{ url_for('main.landing') }}">Back to home</a>
+    <a class="btn btn-outline" href="{{ url_for('markets.index') }}">Browse markets</a>
+  </div>
+</section>
+{% endblock %}
